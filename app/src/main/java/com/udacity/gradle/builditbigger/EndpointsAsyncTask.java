@@ -1,6 +1,5 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -21,8 +20,8 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void, CustomMessage> {
     private static MyApi myApiService = null;
     private OnPostExecuteListener onPostExecuteListener;
 
-    public void setOnPostExecuteListener(Context context) {
-        onPostExecuteListener = (OnPostExecuteListener) context;
+    public void setOnPostExecuteListener(Object object) {
+        onPostExecuteListener = (OnPostExecuteListener) object;
     }
 
     @Override
