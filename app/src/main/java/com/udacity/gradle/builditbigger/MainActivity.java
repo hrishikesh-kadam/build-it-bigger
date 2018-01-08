@@ -2,21 +2,31 @@ package com.udacity.gradle.builditbigger;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.android.androidjokelibrary.DisplayJokeActivity;
-import com.example.android.javajokelibrary.JokeTeller;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements EndpointsAsyncTask.OnPostExecuteListener {
+
+    private FrameLayout progressBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        progressBarLayout = fragment.getView().findViewById(R.id.progressBar);
     }
 
 
@@ -43,9 +53,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        //Toast.makeText(this, JokeTeller.getJoke(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, DisplayJokeActivity.class);
-        intent.putExtra(DisplayJokeActivity.JOKE_KEY, JokeTeller.getJoke());
-        startActivity(intent);
+
+        progressBarLayout.setVisibility(View.VISIBLE);
+
+        EndpointsAsyncTask endpointsAsyncTask = new EndpointsAsyncTask();
+        endpointsAsyncTask.setOnPostExecuteListener(this);
+        endpointsAsyncTask.execute();
+    }
+
+    @Override
+    public void onPostExecute(CustomMessage customMessage) {
+        Log.d("MainActivity", "-> onPostExecute -> " + customMessage);
+
+        if (!customMessage.isSuccessful() && TextUtils.isEmpty(customMessage.getResult()))
+            Toast.makeText(this, R.string.no_joke_found, Toast.LENGTH_SHORT).show();
+
+        else {
+            Intent intent = new Intent(this, DisplayJokeActivity.class);
+            intent.putExtra(DisplayJokeActivity.JOKE_KEY, customMessage.getResult());
+            startActivity(intent);
+        }
+
+        progressBarLayout.setVisibility(View.GONE);
     }
 }
