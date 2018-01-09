@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(AndroidJUnit4.class)
 public class FunctionalTest {
 
-    private String result = null;
+    private CustomMessage customMessage = null;
     private CountDownLatch signal = null;
 
     @Before
@@ -43,8 +43,7 @@ public class FunctionalTest {
             @Override
             public void onPostExecute(CustomMessage customMessage) {
 
-                if (customMessage != null)
-                    result = customMessage.getResult();
+                FunctionalTest.this.customMessage = customMessage;
 
                 signal.countDown();
             }
@@ -53,7 +52,14 @@ public class FunctionalTest {
         endpointsAsyncTask.execute();
         signal.await();
 
-        Log.d("FunctionalTest", "-> testEndpointAsyncTask -> result = " + result);
-        Assert.assertEquals(false, TextUtils.isEmpty(result));
+        Log.d("FunctionalTest", "-> testEndpointAsyncTask -> " + customMessage);
+
+        Assert.assertNotNull(customMessage);
+
+        if (customMessage != null) {
+
+            Assert.assertEquals(true, customMessage.isSuccessful());
+            Assert.assertEquals(false, TextUtils.isEmpty(customMessage.getResult()));
+        }
     }
 }

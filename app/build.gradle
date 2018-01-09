@@ -48,3 +48,23 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.1'
     compile project(path: ':backend', configuration: 'android-endpoints')
 }
+
+// Optional Tasks - Configure Test Task
+
+task gceTask {
+
+    dependsOn ':backend:appengineRun'
+
+    project(':backend').afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+
+    finalizedBy 'testEndpointAsyncTask'
+}
+
+task testEndpointAsyncTask {
+
+    dependsOn ':app:connectedAndroidTest'
+
+    finalizedBy ':backend:appengineStop'
+}
