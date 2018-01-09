@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     public void onPostExecute(CustomMessage customMessage) {
         Log.d("MainActivity", "-> onPostExecute -> " + customMessage);
 
-        if (!customMessage.isSuccessful() && TextUtils.isEmpty(customMessage.getResult()))
+        if (!customMessage.isSuccessful() || TextUtils.isEmpty(customMessage.getResult()))
             Toast.makeText(this, R.string.no_joke_found, Toast.LENGTH_SHORT).show();
 
         else {
